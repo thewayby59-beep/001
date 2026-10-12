@@ -1,0 +1,771 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>001 Do'kon</title>
+<style id="css">
+/* Layout: qora sahna, ingichka chiziqlar, mahsulot rasmi asosiy. Telefon birinchi. */
+:root {
+  --bg:#0a0a0b; --panel:#121214; --line:#26262a; --fg:#f3f2ee; --mute:#8a8a92; --err:#ff8f8f;
+  --serif:Georgia, "Times New Roman", serif; --sans:system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  color-scheme:dark;
+}
+* { box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+body { background:var(--bg); color:var(--fg); font-family:var(--sans); font-size:14px; line-height:1.4; -webkit-text-size-adjust:100%; }
+button, input { font:inherit; color:inherit; }
+button { cursor:pointer; }
+:focus-visible { outline:2px solid var(--fg); outline-offset:2px; }
+.serif { font-family:var(--serif); font-weight:400; }
+
+.top { position:sticky; top:env(safe-area-inset-top, 0px); z-index:30; display:flex; justify-content:space-between; align-items:center; padding:14px 16px; background:rgba(10,10,11,.92); border-bottom:1px solid var(--line); }
+.mark { font-size:24px; letter-spacing:.35em; padding-left:.35em; }
+.lang { display:flex; gap:16px; }
+.lang button { background:none; border:0; padding:6px 0; font-size:11px; letter-spacing:.18em; color:var(--mute); border-bottom:1px solid transparent; }
+.lang button[aria-pressed="true"] { color:var(--fg); border-bottom-color:var(--fg); }
+.cartbtn { display:flex; align-items:center; gap:8px; background:none; border:1px solid var(--fg); padding:8px 14px; font-size:12px; letter-spacing:.2em; text-transform:uppercase; }
+.cartbtn svg { width:18px; height:18px; fill:none; stroke:currentColor; stroke-width:1.5; stroke-linecap:round; stroke-linejoin:round; }
+.cartbtn #count { background:var(--fg); color:var(--bg); min-width:20px; height:20px; border-radius:10px; display:inline-flex; align-items:center; justify-content:center; font-size:11px; letter-spacing:0; padding:0 5px; }
+.cartbtn.has { animation:cglow 1.6s ease-in-out infinite; }
+.cartbtn.has svg { animation:glow 1.6s ease-in-out infinite; }
+@keyframes cglow { 0%,100% { box-shadow:0 0 2px rgba(255,255,255,.25); text-shadow:0 0 1px rgba(255,255,255,.3); } 50% { box-shadow:0 0 6px #fff, 0 0 16px rgba(255,255,255,.7); text-shadow:0 0 6px #fff, 0 0 12px rgba(255,255,255,.8); } }
+@media (prefers-reduced-motion:reduce) { .cartbtn.has, .cartbtn.has svg { animation:none; } }
+.cartbar { position:fixed; left:12px; right:12px; bottom:calc(12px + env(safe-area-inset-bottom, 0px)); z-index:35; display:flex; justify-content:space-between; align-items:center; gap:12px; background:var(--fg); color:var(--bg); border:0; padding:16px 18px; font-size:13px; letter-spacing:.14em; text-transform:uppercase; max-width:600px; margin:0 auto; }
+.cartbar[hidden] { display:none; }
+.foot { padding-bottom:96px !important; }
+
+.hero { text-align:center; padding:56px 16px 44px; border-bottom:1px solid var(--line); }
+.hero .big { font-size:clamp(44px, 14vw, 76px); letter-spacing:.25em; padding-left:.25em; line-height:1; }
+.hero .rule { width:48px; height:1px; background:var(--fg); margin:24px auto; }
+.ticker { margin-inline:-16px; overflow:hidden; white-space:nowrap; border-block:1px solid var(--line); padding:16px 0; }
+.track { display:inline-block; color:var(--fg); font-size:12px; letter-spacing:.4em; text-transform:uppercase; animation:slide 26s linear infinite; will-change:transform; }
+@keyframes slide { to { transform:translateX(-50%); } }
+.tw { display:inline-block; font-size:15px; line-height:1; vertical-align:-1px; animation-name:tw; animation-iteration-count:infinite; animation-timing-function:ease-in-out; }
+@keyframes tw {
+  0%, 52%, 100% { color:var(--fg); opacity:.55; transform:scale(.85); text-shadow:none; }
+  60% { color:#fff; opacity:1; transform:scale(1.5); text-shadow:0 0 3px #fff, 0 0 8px #fff, 0 0 18px #fff, 0 0 30px rgba(255,255,255,.8); }
+  68% { color:#fff; opacity:.7; transform:scale(1); text-shadow:0 0 6px rgba(255,255,255,.7); }
+  76% { color:#fff; opacity:1; transform:scale(1.3); text-shadow:0 0 4px #fff, 0 0 14px #fff, 0 0 24px rgba(255,255,255,.7); }
+  86% { color:var(--fg); opacity:.6; transform:scale(.9); text-shadow:none; }
+}
+@media (prefers-reduced-motion:reduce) { .track { animation:none; } .tw { animation:none; } }
+
+.rail { display:flex; gap:16px; justify-content:safe center; overflow-x:auto; padding:26px 16px 8px; scroll-snap-type:x proximity; -webkit-overflow-scrolling:touch; scrollbar-width:none; }
+.rail::-webkit-scrollbar { display:none; }
+.chip { flex:none; width:76px; display:flex; flex-direction:column; align-items:center; gap:10px; background:none; border:0; padding:4px 0; color:var(--mute); scroll-snap-align:start; }
+.disc { width:68px; height:68px; border-radius:50%; border:1px solid var(--line); background:var(--panel); color:var(--fg); display:flex; align-items:center; justify-content:center; transition:background .25s, color .25s, box-shadow .25s; }
+.disc svg { width:32px; height:32px; fill:none; stroke:currentColor; stroke-width:1.5; stroke-linecap:round; stroke-linejoin:round; }
+.disc .ltr { font-size:26px; line-height:1; }
+.cname { font-size:10px; letter-spacing:.16em; text-transform:uppercase; line-height:1.3; text-align:center; max-width:76px; overflow-wrap:anywhere; }
+.disc svg, .disc .ltr { animation:glow 1.8s ease-in-out infinite; }
+@keyframes glow {
+  0%, 100% { filter:drop-shadow(0 0 1px rgba(255,255,255,.3)); transform:scale(1); }
+  50% { filter:drop-shadow(0 0 3px #fff) drop-shadow(0 0 9px rgba(255,255,255,.85)); transform:scale(1.15); }
+}
+@media (prefers-reduced-motion:reduce) { .disc svg, .disc .ltr { animation:none; } }
+.chip:active .disc { background:var(--line); }
+.chip[aria-pressed="true"] { color:var(--fg); }
+.chip[aria-pressed="true"] .disc { border-color:var(--fg); box-shadow:0 0 0 3px var(--bg), 0 0 0 4px var(--fg); }
+
+.grid { display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:1px; background:var(--line); border-block:1px solid var(--line); max-width:1150px; margin-inline:auto; }
+@media (min-width:760px) { .grid { grid-template-columns:repeat(auto-fill, minmax(250px,1fr)); border-inline:1px solid var(--line); } }
+.card { background:var(--bg); padding:12px 12px 16px; display:flex; flex-direction:column; min-width:0; }
+.photo { aspect-ratio:4/5; background:var(--panel); overflow:hidden; display:flex; align-items:center; justify-content:center; margin-bottom:12px; }
+.photo img { width:100%; height:100%; object-fit:cover; display:block; }
+.photo span { color:#2c2c31; font-size:44px; letter-spacing:.2em; padding-left:.2em; }
+.card h3 { font-size:16px; margin-bottom:3px; overflow-wrap:anywhere; }
+.card .desc { color:var(--mute); font-size:12px; margin-bottom:8px; overflow-wrap:anywhere; }
+.card .price { font-size:16px; letter-spacing:.04em; margin-bottom:10px; font-variant-numeric:tabular-nums; }
+.sizes { display:flex; flex-wrap:wrap; gap:5px; margin-bottom:12px; }
+.sizes label { cursor:pointer; }
+.sizes input { position:absolute; opacity:0; pointer-events:none; }
+.sizes span { display:block; min-width:38px; text-align:center; padding:6px 7px; border:1px solid var(--line); color:var(--mute); font-size:12px; }
+.sizes input:checked + span { background:var(--fg); color:var(--bg); border-color:var(--fg); }
+.sizes input:focus-visible + span { outline:2px solid var(--fg); outline-offset:2px; }
+.add { margin-top:auto; width:100%; background:none; border:1px solid var(--fg); padding:12px 8px; font-size:11px; letter-spacing:.22em; text-transform:uppercase; }
+.add:active { background:var(--fg); color:var(--bg); }
+.none { text-align:center; color:var(--mute); padding:44px 16px; letter-spacing:.12em; }
+
+.gridhead { display:flex; justify-content:space-between; align-items:center; gap:12px; max-width:1150px; margin:30px auto 14px; padding-inline:16px; scroll-margin-top:72px; }
+.gridhead span { font-size:12px; letter-spacing:.3em; text-transform:uppercase; color:var(--mute); }
+.gridhead button { background:none; border:0; border-bottom:1px solid var(--fg); font-size:11px; letter-spacing:.2em; text-transform:uppercase; padding:4px 0; }
+.foot { margin-top:56px; }
+
+.foot { text-align:center; padding:34px 16px 30px; border-top:1px solid var(--line); }
+.foot .mark { font-size:18px; display:block; margin-bottom:8px; }
+.foot p { color:var(--mute); font-size:11px; letter-spacing:.25em; text-transform:uppercase; }
+.foot .mark { display:inline-block; padding:8px 8px 8px .35em; user-select:none; -webkit-user-select:none; -webkit-tap-highlight-color:transparent; }
+.gate { position:fixed; inset:0; z-index:80; background:rgba(0,0,0,.82); display:flex; align-items:center; justify-content:center; padding:16px; }
+.gbox { width:min(360px,100%); background:var(--panel); border:1px solid var(--fg); padding:24px 20px; }
+.gbox h3 { font-weight:400; font-size:12px; letter-spacing:.3em; text-transform:uppercase; margin-bottom:8px; }
+.gbox p { color:var(--mute); font-size:12px; margin-bottom:14px; }
+.grow { display:flex; gap:8px; }
+.grow .fbtn { flex:1; }
+
+.veil { position:fixed; inset:0; background:rgba(0,0,0,.65); z-index:40; }
+.drawer { position:fixed; top:0; right:0; bottom:0; width:min(420px,100%); background:var(--panel); border-left:1px solid var(--fg); z-index:50; display:flex; flex-direction:column; padding-top:env(safe-area-inset-top, 0px); padding-bottom:env(safe-area-inset-bottom, 0px); }
+.dhead { display:flex; justify-content:space-between; align-items:center; padding:18px 20px; border-bottom:1px solid var(--line); font-size:12px; letter-spacing:.3em; text-transform:uppercase; }
+.dhead button { background:none; border:0; font-size:22px; line-height:1; padding:4px 8px; }
+.lines { flex:1; overflow-y:auto; padding:4px 20px; }
+.line { display:flex; justify-content:space-between; align-items:center; gap:12px; padding:14px 0; border-bottom:1px solid var(--line); }
+.line div { min-width:0; overflow-wrap:anywhere; }
+.line small { display:block; color:var(--mute); margin-top:3px; }
+.line button { flex:none; background:none; border:1px solid var(--line); color:var(--mute); padding:6px 10px; }
+.empty { color:var(--mute); padding:24px 0; }
+.dfoot { padding:18px 20px; border-top:1px solid var(--line); background:var(--bg); }
+.total { display:flex; justify-content:space-between; font-size:12px; letter-spacing:.25em; text-transform:uppercase; margin-bottom:12px; font-variant-numeric:tabular-nums; }
+.field { width:100%; padding:13px; margin-bottom:8px; background:var(--panel); border:1px solid var(--line); border-radius:0; color:var(--fg); }
+.field:focus { outline:none; border-color:var(--fg); }
+.order { display:block; text-align:center; text-decoration:none; background:var(--fg); color:var(--bg); padding:15px 10px; font-size:11px; letter-spacing:.22em; text-transform:uppercase; }
+.order[data-ready="0"] { opacity:.45; }
+
+.toast { position:fixed; left:50%; bottom:calc(84px + env(safe-area-inset-bottom, 0px)); transform:translateX(-50%); background:var(--fg); color:var(--bg); padding:12px 20px; z-index:90; max-width:calc(100% - 32px); text-align:center; }
+.toast.err { background:var(--err); color:#1a0505; }
+
+/* Admin */
+.admin { position:fixed; inset:0; z-index:60; background:var(--bg); overflow-y:auto; padding-top:env(safe-area-inset-top, 0px); }
+.ahead { position:sticky; top:0; z-index:2; display:flex; justify-content:space-between; align-items:center; padding:14px 16px; background:var(--bg); border-bottom:1px solid var(--line); }
+.ahead .mark { font-size:18px; }
+.ahead button { background:none; border:0; color:var(--mute); font-size:12px; letter-spacing:.2em; text-transform:uppercase; padding:8px 0; }
+.abody { max-width:640px; margin-inline:auto; padding:8px 16px 140px; }
+.abody h2 { font-weight:400; font-size:12px; letter-spacing:.3em; text-transform:uppercase; color:var(--mute); margin:28px 0 14px; }
+.pbox { display:flex; gap:14px; align-items:center; margin-bottom:14px; flex-wrap:wrap; }
+.pprev { width:104px; aspect-ratio:4/5; background:var(--panel); border:1px dashed var(--line); display:flex; align-items:center; justify-content:center; color:var(--mute); font-size:11px; text-align:center; overflow:hidden; }
+.pprev img { width:100%; height:100%; object-fit:cover; }
+.pbtns { display:flex; flex-direction:column; gap:8px; min-width:0; }
+.fbtn { background:none; border:1px solid var(--fg); padding:12px 16px; font-size:11px; letter-spacing:.2em; text-transform:uppercase; }
+.fbtn.soft { border-color:var(--line); color:var(--mute); }
+.lbl { display:block; font-size:11px; letter-spacing:.18em; text-transform:uppercase; color:var(--mute); margin-bottom:5px; }
+.two { display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:10px; }
+.arow { display:flex; align-items:center; gap:12px; padding:12px 0; border-bottom:1px solid var(--line); }
+.athumb { width:52px; aspect-ratio:4/5; flex:none; background:var(--panel); overflow:hidden; display:flex; align-items:center; justify-content:center; color:#2c2c31; font-size:12px; }
+.athumb img { width:100%; height:100%; object-fit:cover; }
+.ainfo { flex:1; min-width:0; overflow-wrap:anywhere; }
+.ainfo small { display:block; color:var(--mute); margin-top:2px; }
+.arow button { flex:none; background:none; border:1px solid var(--line); padding:8px 10px; font-size:11px; letter-spacing:.1em; text-transform:uppercase; }
+.arow button.danger { color:var(--err); border-color:#4a2a2a; }
+.abar { position:fixed; left:0; right:0; bottom:0; z-index:3; background:var(--panel); border-top:1px solid var(--line); padding:12px 16px calc(12px + env(safe-area-inset-bottom, 0px)); display:flex; gap:12px; align-items:center; justify-content:space-between; }
+.abar span { color:var(--mute); font-size:12px; min-width:0; }
+.abar .fbtn { background:var(--fg); color:var(--bg); flex:none; }
+.abar .fbtn:disabled { opacity:.4; }
+@media (prefers-reduced-motion:no-preference) { .photo img { transition:transform .5s; } .card:hover .photo img { transform:scale(1.03); } }
+</style>
+
+<div id="root"></div>
+
+<template id="shell">
+  <header class="top">
+    <div class="lang" id="lang" role="group" aria-label="Til"><button type="button" data-l="uz">UZ</button><button type="button" data-l="ru">RU</button><button type="button" data-l="en">EN</button></div>
+    <button class="cartbtn" id="openCart" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 8h14l-1 12H6L5 8z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg><span data-i="cart">Savat</span> <span id="count">0</span></button>
+  </header>
+
+  <section class="hero">
+    <div class="big serif">001</div>
+    <div class="rule"></div>
+    <div class="ticker" role="img" aria-label="Brand clothes"><div class="track" id="track"></div></div>
+  </section>
+
+  <section class="rail" id="filters" aria-label="Toifalar"></section>
+  <div class="gridhead" id="gridhead"><span id="gname">Hammasi</span><button type="button" id="gall" hidden><span data-i="all">Hammasi</span> ✕</button></div>
+  <main class="grid" id="grid"></main>
+  <p class="none" id="none" hidden data-i="none">Mahsulotlar tez orada qo'shiladi</p>
+
+  <footer class="foot">
+    <span class="mark serif" id="secret">001</span>
+  </footer>
+
+  <button class="cartbar" id="cartbar" type="button" hidden><span><span data-i="cart">Savat</span> · <span id="bcount">0</span></span><span><span id="bsum">0</span> <span data-i="som">so'm</span> →</span></button>
+
+  <div class="veil" id="veil" hidden></div>
+  <aside class="drawer" id="drawer" hidden aria-label="Savat">
+    <div class="dhead"><span data-i="cart">Savat</span><button type="button" id="closeCart" aria-label="Yopish" data-a="close">✕</button></div>
+    <div class="lines" id="lines"></div>
+    <div class="dfoot">
+      <div class="total"><span data-i="total">Jami</span><span><span id="sum">0</span> <span data-i="som">so'm</span></span></div>
+      <input class="field" id="cname" placeholder="Ismingiz" data-p="name" maxlength="60" autocomplete="name">
+      <input class="field" id="cphone" placeholder="Telefon raqamingiz" data-p="phone" inputmode="tel" maxlength="30" autocomplete="tel">
+      <a class="order" id="order" data-ready="0" href="#" target="_blank" rel="noopener" data-i="order">Telegram orqali buyurtma</a>
+    </div>
+  </aside>
+
+  <section class="admin" id="admin" hidden aria-label="Admin panel">
+    <div class="ahead"><span class="mark serif">001 · ADMIN</span><button type="button" id="closeAdmin">Yopish</button></div>
+    <div class="abody">
+      <h2 id="formTitle">Yangi mahsulot</h2>
+      <div class="pbox">
+        <div class="pprev" id="pprev">Rasm yo'q</div>
+        <div class="pbtns">
+          <button class="fbtn" type="button" id="pickPhoto">Rasm tanlash</button>
+          <button class="fbtn soft" type="button" id="dropPhoto">Rasmni olib tashlash</button>
+          <input type="file" id="photoFile" accept="image/*" hidden>
+        </div>
+      </div>
+      <label class="lbl" for="fNom">Nomi</label>
+      <input class="field" id="fNom" maxlength="80" placeholder="Masalan: Oversize futbolka">
+      <div class="two">
+        <div><label class="lbl" for="fNarx">Narxi (so'm)</label><input class="field" id="fNarx" type="number" inputmode="numeric" min="0" placeholder="119000"></div>
+        <div><label class="lbl" for="fToifa">Toifa</label><input class="field" id="fToifa" maxlength="30" placeholder="Futbolka" list="dlcats"><datalist id="dlcats"></datalist></div>
+      </div>
+      <label class="lbl" for="fTavsif">Qisqa tavsif</label>
+      <input class="field" id="fTavsif" maxlength="120" placeholder="Qalin paxta, erkin kesim">
+      <label class="lbl" for="fRazmer">Razmerlar (vergul bilan)</label>
+      <input class="field" id="fRazmer" placeholder="2XL, 3XL, 4XL, 5XL">
+      <div class="pbtns" style="flex-direction:row;flex-wrap:wrap">
+        <button class="fbtn" type="button" id="saveItem">Mahsulotni qo'shish</button>
+        <button class="fbtn soft" type="button" id="clearForm">Tozalash</button>
+      </div>
+
+      <h2>Mahsulotlar</h2>
+      <div id="alist"></div>
+
+      <h2>Toifalar</h2>
+      <label class="lbl" for="fCats">Toifalar ro'yxati (vergul bilan)</label>
+      <input class="field" id="fCats" maxlength="400" placeholder="Futbolka, Jinsi, Soat, Kepka">
+
+      <h2>Buyurtmalar qayerga kelsin</h2>
+      <label class="lbl" for="fTg">Telegram username (@ belgisisiz)</label>
+      <input class="field" id="fTg" maxlength="32" placeholder="username" autocapitalize="none" autocomplete="off">
+
+      <h2>Parolni almashtirish</h2>
+      <label class="lbl" for="fNewPw">Yangi parol (kamida 8 belgi)</label>
+      <input class="field" id="fNewPw" type="password" autocomplete="new-password" maxlength="200">
+      <button class="fbtn" type="button" id="setPw">Parolni o'zgartirish</button>
+    </div>
+    <div class="abar">
+      <span id="astatus">O'zgarish yo'q</span>
+      <button class="fbtn" type="button" id="publish" disabled>E'lon qilish</button>
+    </div>
+  </section>
+
+  <div class="gate" id="gate" hidden>
+    <form class="gbox" id="gform">
+      <h3 id="gtitle">Admin</h3>
+      <p id="gtext"></p>
+      <input class="field" id="gpw" type="password" autocomplete="off" maxlength="200" aria-label="Parol">
+      <div class="grow">
+        <button class="fbtn soft" type="button" id="gcancel">Bekor</button>
+        <button class="fbtn" type="submit" id="gok">Kirish</button>
+      </div>
+    </form>
+  </div>
+
+  <div class="toast" id="toast" hidden></div>
+</template>
+
+<script type="application/json" id="data">{"telegram":"clothes_001","nextId":5,"products":[{"id":1,"nom":"Oversize futbolka","toifa":"Futbolka","narx":119000,"tavsif":"Qalin paxta, erkin kesim","razmer":["2XL","3XL","4XL","5XL","6XL"],"rasm":null},{"id":2,"nom":"Keng jinsi shim","toifa":"Shim","narx":259000,"tavsif":"Belda qulay, mustahkam denim","razmer":["40","42","44","46","48","50"],"rasm":null},{"id":3,"nom":"Qishki kurtka","toifa":"Kurtka","narx":529000,"tavsif":"Issiq astar, shamolga chidamli","razmer":["3XL","4XL","5XL","6XL"],"rasm":null},{"id":4,"nom":"Hudi","toifa":"Kurtka","narx":289000,"tavsif":"Qalin fliz, katta kapyushon","razmer":["2XL","3XL","4XL","5XL"],"rasm":null}]}</script>
+
+<script id="app">
+(function () {
+  'use strict';
+  var FALLBACK_RESET = ':root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}';
+
+  function $(s) { return document.querySelector(s); }
+  function add(parent, c) {
+    if (c == null || c === false) return;
+    if (Array.isArray(c)) { c.forEach(function (x) { add(parent, x); }); return; }
+    parent.append(c);
+  }
+  function el(tag, props) {
+    var e = document.createElement(tag);
+    if (props) Object.keys(props).forEach(function (k) {
+      var v = props[k];
+      if (k === 'class') e.className = v;
+      else if (k.indexOf('on') === 0) e.addEventListener(k.slice(2), v);
+      else if (v === true) e.setAttribute(k, '');
+      else if (v !== false && v != null) e.setAttribute(k, v);
+    });
+    for (var i = 2; i < arguments.length; i++) add(e, arguments[i]);
+    return e;
+  }
+  function som(n) { return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ' '); }
+
+  // ---------- Holat ----------
+  var state;
+  try { state = JSON.parse($('#data').textContent); } catch (e) { state = null; }
+  if (!state || !Array.isArray(state.products)) state = { telegram: '', nextId: 1, products: [] };
+  state.telegram = state.telegram || '';
+  if (!Array.isArray(state.cats)) state.cats = ['Futbolka', 'Kurtka', 'Jinsi', 'Shim', 'Krossovka', 'Soat', 'Kepka', 'Atir', "Ko'zoynak"];
+  state.nextId = state.nextId || (state.products.reduce(function (a, p) { return Math.max(a, p.id); }, 0) + 1);
+
+  var cart = [];
+  try {
+    var saved = JSON.parse(localStorage.getItem('savat_001') || '[]');
+    if (Array.isArray(saved)) cart = saved.filter(function (x) {
+      return x && typeof x.nom === 'string' && isFinite(x.narx) && isFinite(x.soni) && typeof x.razmer === 'string';
+    });
+  } catch (e) {}
+
+  var T = {
+    uz: { cart:'Savat', all:'Hammasi', none:"Mahsulotlar tez orada qo'shiladi", total:'Jami', som:"so'm", order:'Telegram orqali buyurtma', add:"Savatga qo'shish", added:"Savatga qo'shildi", empty:"Savat hozircha bo'sh", size:'Razmer', pcs:'dona', del:"O'chirish", close:'Yopish', name:'Ismingiz', phone:'Telefon raqamingiz', emptyT:"Savat bo'sh", need:'Ism va telefon raqamingizni yozing', nosetup:"Do'kon hali sozlanmagan. Keyinroq urinib ko'ring" },
+    ru: { cart:'Корзина', all:'Все', none:'Товары скоро появятся', total:'Итого', som:'сум', order:'Заказать через Telegram', add:'В корзину', added:'Добавлено в корзину', empty:'Корзина пока пуста', size:'Размер', pcs:'шт.', del:'Удалить', close:'Закрыть', name:'Ваше имя', phone:'Номер телефона', emptyT:'Корзина пуста', need:'Укажите имя и номер телефона', nosetup:'Магазин ещё не настроен. Попробуйте позже' },
+    en: { cart:'Cart', all:'All', none:'Products coming soon', total:'Total', som:'UZS', order:'Order via Telegram', add:'Add to cart', added:'Added to cart', empty:'Your cart is empty', size:'Size', pcs:'pcs', del:'Remove', close:'Close', name:'Your name', phone:'Phone number', emptyT:'Cart is empty', need:'Enter your name and phone number', nosetup:'The store is not set up yet. Try again later' }
+  };
+  var CATT = {
+    ru: { futbolka:'Футболки', kurtka:'Куртки', jinsi:'Джинсы', shim:'Брюки', krossovka:'Кроссовки', soat:'Часы', kepka:'Кепки', atir:'Парфюм', "ko'zoynak":'Очки' },
+    en: { futbolka:'T-shirts', kurtka:'Jackets', jinsi:'Jeans', shim:'Trousers', krossovka:'Sneakers', soat:'Watches', kepka:'Caps', atir:'Perfume', "ko'zoynak":'Glasses' }
+  };
+  var lang = 'uz';
+  try {
+    var sv = localStorage.getItem('til_001');
+    if (sv && T[sv]) lang = sv;
+    else { var nl = String(navigator.language || '').slice(0, 2).toLowerCase(); if (T[nl]) lang = nl; }
+  } catch (e) {}
+  function t(k) { return T[lang][k]; }
+  function catLabel(c) {
+    if (c === 'Hammasi') return t('all');
+    var k = String(c).toLowerCase().replace(/[’‘ʻʼ`´]/g, "'").trim();
+    return (CATT[lang] && CATT[lang][k]) || c;
+  }
+  function applyLang() {
+    document.documentElement.lang = lang;
+    document.querySelectorAll('[data-i]').forEach(function (n) { n.textContent = t(n.getAttribute('data-i')); });
+    document.querySelectorAll('[data-p]').forEach(function (n) { n.setAttribute('placeholder', t(n.getAttribute('data-p'))); });
+    document.querySelectorAll('[data-a]').forEach(function (n) { n.setAttribute('aria-label', t(n.getAttribute('data-a'))); });
+    document.querySelectorAll('#lang button').forEach(function (b) { b.setAttribute('aria-pressed', b.getAttribute('data-l') === lang ? 'true' : 'false'); });
+  }
+
+  var category = 'Hammasi';
+  var dirty = false;
+  var editId = null;
+  var editPhoto = null;
+  var toastTimer;
+
+  // ---------- Sahifani yig'ish ----------
+  var root = $('#root');
+  root.append($('#shell').content.cloneNode(true));
+
+  function toast(text, isErr) {
+    var t = $('#toast');
+    t.textContent = text;
+    t.className = 'toast' + (isErr ? ' err' : '');
+    t.hidden = false;
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { t.hidden = true; }, 4200);
+  }
+
+  // ---------- Do'kon ----------
+  function same(a, b) { return String(a).toLowerCase() === String(b).toLowerCase(); }
+  function catList() {
+    var list = [];
+    (state.cats || []).concat(state.products.map(function (p) { return p.toifa; })).forEach(function (c) {
+      if (c && !list.some(function (x) { return same(x, c); })) list.push(c);
+    });
+    return list;
+  }
+  function countOf(c) { return state.products.filter(function (p) { return same(p.toifa, c); }).length; }
+  var centerTarget = null;
+  function pick(c) { category = c; centerTarget = c; renderFilters(); renderGrid(); }
+
+  var S = '<svg viewBox="0 0 48 48" aria-hidden="true">';
+  var ICONS = {
+    'hammasi': S + '<rect x="10" y="10" width="11" height="11" rx="1.5"/><rect x="27" y="10" width="11" height="11" rx="1.5"/><rect x="10" y="27" width="11" height="11" rx="1.5"/><rect x="27" y="27" width="11" height="11" rx="1.5"/></svg>',
+    'futbolka': S + '<path d="M17 8 L8 13 L11 21 L15 19 V40 H33 V19 L37 21 L40 13 L31 8 C30 11 27 12.5 24 12.5 C21 12.5 18 11 17 8 Z"/></svg>',
+    'kurtka': S + '<path d="M17 9 L7 15 L9 35 L15 36 V41 H33 V36 L39 35 L41 15 L31 9 C30 13 27 15 24 15 C21 15 18 13 17 9 Z"/><path d="M24 15 V41 M18 30 H21 M27 30 H30"/></svg>',
+    'jinsi': S + '<path d="M14 7 H34 L37 41 H26.5 L24 20 L21.5 41 H11 Z"/><path d="M14 12 H34 M17 14 C17 18 19.5 19.5 22 19 M31 14 C31 18 28.5 19.5 26 19"/></svg>',
+    'shim': S + '<path d="M15 7 H33 L35 41 H26 L24 18 L22 41 H13 Z"/><path d="M15 11 H33 M19 7 V11 M29 7 V11 M19 20 L17.5 38 M29 20 L30.5 38"/></svg>',
+    'krossovka': S + '<path d="M6 30 C6 27.5 7.5 26.5 9.5 26 L13 15 L17 18 C19 19.5 21 19.5 23 18 L25 16 L29 23 C33 24 39 26 41.5 29.5 C42.5 31 42 33 40 33 H8 C6.8 33 6 32 6 30 Z"/><rect x="6" y="33" width="36" height="4" rx="1.5"/><path d="M16.5 21 L20 24 M20 19.5 L23.5 22.5 M23 17.5 L26.5 21"/></svg>',
+    'soat': S + '<circle cx="24" cy="24" r="9"/><path d="M19.5 15.5 L21 6.5 H27 L28.5 15.5 M19.5 32.5 L21 41.5 H27 L28.5 32.5 M24 24 V18.5 M24 24 L28 26"/></svg>',
+    'kepka': S + '<path d="M10 30 C10 20 16 14 24 14 C32 14 38 20 38 30"/><path d="M6 30 H38 C42.5 30 45.5 32 46 34.5 H6 Z"/><path d="M24 14 V30"/><circle cx="24" cy="12.5" r="1.3"/></svg>',
+    'atir': S + '<rect x="13" y="21" width="22" height="19" rx="2"/><rect x="20" y="15" width="8" height="6"/><rect x="18" y="8" width="12" height="7" rx="1.5"/><path d="M24 26 L27 30.5 L24 35 L21 30.5 Z"/></svg>',
+    "ko'zoynak": S + '<circle cx="14" cy="26" r="8"/><circle cx="34" cy="26" r="8"/><path d="M22 25 C23.5 23 24.5 23 26 25 M6 26 L4 19 M42 26 L44 19"/></svg>'
+  };
+  var ALIAS = { 'polo': 'futbolka', "ko'ylak": 'futbolka', 'koylak': 'futbolka', 'hudi': 'kurtka', 'jins': 'jinsi', 'chalvor': 'shim', 'shalvar': 'shim', 'krasovka': 'krossovka', 'krosovka': 'krossovka', 'poyabzal': 'krossovka', 'parfyum': 'atir', 'kozoynak': "ko'zoynak", 'ochki': "ko'zoynak" };
+  function iconFor(c) {
+    var k = String(c).toLowerCase().replace(/[’‘ʻʼ`´]/g, "'").trim();
+    return ICONS[k] || ICONS[ALIAS[k]] || '';
+  }
+
+  function renderFilters() {
+    var box = $('#filters');
+    var keep = box.scrollLeft;
+    box.replaceChildren();
+    var cats = catList();
+    if (category !== 'Hammasi' && !cats.some(function (c) { return same(c, category); })) category = 'Hammasi';
+    ['Hammasi'].concat(cats).forEach(function (c) {
+      var on = same(c, category);
+      var disc = el('span', { class: 'disc' });
+      var ic = iconFor(c);
+      if (ic) disc.innerHTML = ic;
+      else disc.append(el('span', { class: 'serif ltr' }, c.charAt(0).toUpperCase()));
+      var glowEl = disc.firstChild;
+      if (glowEl && glowEl.style) {
+        glowEl.style.animationDuration = (1.4 + Math.random() * 1.2).toFixed(2) + 's';
+        glowEl.style.animationDelay = '-' + (Math.random() * 2).toFixed(2) + 's';
+      }
+      box.append(el('button', { type: 'button', class: 'chip', 'data-cat': c, 'aria-pressed': on ? 'true' : 'false',
+        onclick: function () { pick(on && c !== 'Hammasi' ? 'Hammasi' : c); } },
+        disc, el('span', { class: 'cname' }, catLabel(c))));
+    });
+    box.scrollLeft = keep;
+    if (centerTarget !== null) {
+      var t = null;
+      box.querySelectorAll('.chip').forEach(function (b) { if (b.getAttribute('data-cat') === centerTarget) t = b; });
+      centerTarget = null;
+      if (t) {
+        var br = box.getBoundingClientRect(), tr = t.getBoundingClientRect();
+        box.scrollTo({ left: box.scrollLeft + (tr.left - br.left) - (br.width - tr.width) / 2, behavior: 'smooth' });
+      }
+    }
+    $('#gname').textContent = catLabel(category);
+    $('#gall').hidden = category === 'Hammasi';
+  }
+  $('#gall').addEventListener('click', function () { category = 'Hammasi'; renderFilters(); renderGrid(); });
+  function card(p) {
+    var name = 'size' + p.id;
+    var photo = el('div', { class: 'photo' });
+    if (p.rasm) photo.append(el('img', { src: p.rasm, alt: p.nom }));
+    else photo.append(el('span', { class: 'serif' }, '001'));
+    var c = el('div', { class: 'card' },
+      photo,
+      el('h3', { class: 'serif' }, p.nom),
+      p.tavsif ? el('div', { class: 'desc' }, p.tavsif) : null,
+      el('div', { class: 'price' }, som(p.narx) + ' ' + t('som')),
+      el('div', { class: 'sizes' }, p.razmer.map(function (r, j) {
+        return el('label', null,
+          el('input', { type: 'radio', name: name, value: r, checked: j === 0 }),
+          el('span', null, r));
+      })),
+      el('button', { class: 'add', type: 'button', onclick: function () {
+        var chosen = c.querySelector('input:checked');
+        addToCart(p, chosen ? chosen.value : p.razmer[0]);
+      } }, t('add'))
+    );
+    return c;
+  }
+
+  function renderGrid() {
+    var grid = $('#grid');
+    grid.replaceChildren();
+    var list = state.products.filter(function (p) { return category === 'Hammasi' || same(p.toifa, category); });
+    list.forEach(function (p) { grid.append(card(p)); });
+    grid.hidden = list.length === 0;
+    $('#none').hidden = list.length > 0;
+  }
+
+  // ---------- Savat ----------
+  function cartTotal() { return cart.reduce(function (a, x) { return a + x.narx * x.soni; }, 0); }
+  function saveCart() {
+    try { localStorage.setItem('savat_001', JSON.stringify(cart)); } catch (e) {}
+    renderCart();
+  }
+  function addToCart(p, size) {
+    var found = cart.filter(function (x) { return x.id === p.id && x.razmer === size; })[0];
+    if (found) found.soni++;
+    else cart.push({ id: p.id, nom: p.nom, narx: p.narx, razmer: size, soni: 1 });
+    saveCart();
+    toast(t('added'));
+  }
+  function renderCart() {
+    $('#count').textContent = cart.reduce(function (a, x) { return a + x.soni; }, 0);
+    $('#sum').textContent = som(cartTotal());
+    var n = cart.reduce(function (a, x) { return a + x.soni; }, 0);
+    $('#bcount').textContent = n; $('#bsum').textContent = som(cartTotal()); $('#cartbar').hidden = n === 0; $('#openCart').classList.toggle('has', n > 0);
+    var box = $('#lines');
+    box.replaceChildren();
+    if (!cart.length) box.append(el('p', { class: 'empty' }, t('empty')));
+    cart.forEach(function (x, i) {
+      box.append(el('div', { class: 'line' },
+        el('div', null, x.nom, el('small', null, t('size') + ': ' + x.razmer + ' • ' + x.soni + ' ' + t('pcs') + ' • ' + som(x.narx * x.soni) + ' ' + t('som'))),
+        el('button', { type: 'button', 'aria-label': t('del'), onclick: function () { cart.splice(i, 1); saveCart(); } }, '✕')));
+    });
+    updateOrder();
+  }
+  function orderText() {
+    var t = '001 — Yangi buyurtma!\nIsm: ' + $('#cname').value.trim() + '\nTelefon: ' + $('#cphone').value.trim() + '\n\n';
+    cart.forEach(function (x) { t += '• ' + x.nom + ' (' + x.razmer + ') x' + x.soni + ' = ' + som(x.narx * x.soni) + " so'm\n"; });
+    return t + "\nJami: " + som(cartTotal()) + " so'm";
+  }
+  function updateOrder() {
+    var a = $('#order');
+    var ready = cart.length > 0 && $('#cname').value.trim() && $('#cphone').value.trim() && state.telegram;
+    a.dataset.ready = ready ? '1' : '0';
+    a.setAttribute('href', ready ? 'https://t.me/' + encodeURIComponent(state.telegram) + '?text=' + encodeURIComponent(orderText()) : '#');
+  }
+  function toggleCart(open) { $('#drawer').hidden = !open; $('#veil').hidden = !open; }
+  $('#openCart').addEventListener('click', function () { toggleCart(true); });
+  $('#cartbar').addEventListener('click', function () { toggleCart(true); });
+  $('#closeCart').addEventListener('click', function () { toggleCart(false); });
+  $('#veil').addEventListener('click', function () { toggleCart(false); });
+  $('#cname').addEventListener('input', updateOrder);
+  $('#cphone').addEventListener('input', updateOrder);
+  $('#order').addEventListener('click', function (e) {
+    if (this.dataset.ready === '1') return;
+    e.preventDefault();
+    if (!cart.length) toast(t('emptyT'), true);
+    else if (!$('#cname').value.trim() || !$('#cphone').value.trim()) toast(t('need'), true);
+    else toast(t('nosetup'), true);
+  });
+
+  // ---------- Admin ----------
+  function markDirty() {
+    dirty = true;
+    $('#astatus').textContent = "O'zgarishlar hali e'lon qilinmagan";
+    $('#publish').disabled = false;
+    renderFilters(); renderGrid(); renderAdminList();
+  }
+
+  function renderPreview() {
+    var box = $('#pprev');
+    box.replaceChildren();
+    if (editPhoto) box.append(el('img', { src: editPhoto, alt: '' }));
+    else box.append("Rasm yo'q");
+  }
+  function resetForm() {
+    editId = null; editPhoto = null;
+    ['fNom', 'fNarx', 'fToifa', 'fTavsif', 'fRazmer'].forEach(function (id) { $('#' + id).value = ''; });
+    $('#formTitle').textContent = 'Yangi mahsulot';
+    $('#saveItem').textContent = "Mahsulotni qo'shish";
+    renderPreview();
+  }
+  function startEdit(p) {
+    editId = p.id; editPhoto = p.rasm || null;
+    $('#fNom').value = p.nom; $('#fNarx').value = p.narx; $('#fToifa').value = p.toifa;
+    $('#fTavsif').value = p.tavsif || ''; $('#fRazmer').value = p.razmer.join(', ');
+    $('#formTitle').textContent = 'Tahrirlash';
+    $('#saveItem').textContent = 'O\'zgarishni saqlash';
+    renderPreview();
+    $('#admin').scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function toJpeg(file, max) {
+    return new Promise(function (resolve, reject) {
+      var url = URL.createObjectURL(file);
+      var img = new Image();
+      img.onload = function () {
+        var k = Math.min(1, max / Math.max(img.width, img.height));
+        var w = Math.max(1, Math.round(img.width * k)), h = Math.max(1, Math.round(img.height * k));
+        var c = document.createElement('canvas');
+        c.width = w; c.height = h;
+        var x = c.getContext('2d');
+        x.fillStyle = '#fff'; x.fillRect(0, 0, w, h);
+        x.drawImage(img, 0, 0, w, h);
+        URL.revokeObjectURL(url);
+        resolve(c.toDataURL('image/jpeg', 0.72));
+      };
+      img.onerror = function () { URL.revokeObjectURL(url); reject(new Error("Bu rasmni ochib bo'lmadi")); };
+      img.src = url;
+    });
+  }
+
+  $('#pickPhoto').addEventListener('click', function () { $('#photoFile').click(); });
+  $('#photoFile').addEventListener('change', function (e) {
+    var f = e.target.files[0];
+    if (!f) return;
+    toJpeg(f, 900).then(function (d) { editPhoto = d; renderPreview(); })
+      .catch(function (err) { toast(err.message, true); });
+    e.target.value = '';
+  });
+  $('#dropPhoto').addEventListener('click', function () { editPhoto = null; renderPreview(); });
+  $('#clearForm').addEventListener('click', resetForm);
+
+  $('#saveItem').addEventListener('click', function () {
+    var nom = $('#fNom').value.trim();
+    var narx = Math.round(Number($('#fNarx').value));
+    var toifa = $('#fToifa').value.trim();
+    var razmer = $('#fRazmer').value.split(',').map(function (s) { return s.trim(); }).filter(Boolean).slice(0, 12);
+    if (!nom || $('#fNarx').value === '' || !isFinite(narx) || narx < 0 || !toifa || !razmer.length) {
+      return toast('Nom, narx, toifa va kamida bitta razmerni yozing', true);
+    }
+    var item = { nom: nom, toifa: toifa, narx: narx, tavsif: $('#fTavsif').value.trim(), razmer: razmer, rasm: editPhoto };
+    if (editId != null) {
+      state.products.forEach(function (p) { if (p.id === editId) Object.assign(p, item); });
+    } else {
+      item.id = state.nextId++;
+      state.products.push(item);
+    }
+    resetForm();
+    markDirty();
+    toast("Qo'shildi. Oxirida «E'lon qilish» ni bosing");
+  });
+
+  var pendingDelete = null;
+  function renderAdminList() {
+    var box = $('#alist');
+    box.replaceChildren();
+    if (!state.products.length) box.append(el('p', { class: 'empty' }, "Hozircha mahsulot yo'q"));
+    state.products.forEach(function (p) {
+      var thumb = el('div', { class: 'athumb' });
+      if (p.rasm) thumb.append(el('img', { src: p.rasm, alt: '' })); else thumb.append('001');
+      var sure = pendingDelete === p.id;
+      box.append(el('div', { class: 'arow' },
+        thumb,
+        el('div', { class: 'ainfo' }, p.nom, el('small', null, p.toifa + ' • ' + som(p.narx) + " so'm • " + p.razmer.join(', '))),
+        el('button', { type: 'button', onclick: function () { startEdit(p); } }, 'Tahrir'),
+        el('button', { type: 'button', class: 'danger', onclick: function () {
+          if (pendingDelete !== p.id) { pendingDelete = p.id; renderAdminList(); return; }
+          pendingDelete = null;
+          state.products = state.products.filter(function (x) { return x.id !== p.id; });
+          if (editId === p.id) resetForm();
+          markDirty();
+        } }, sure ? 'Aniqmi?' : "O'chirish")
+      ));
+    });
+  }
+
+  $('#fTg').addEventListener('input', function () {
+    state.telegram = this.value.trim().replace(/^@/, '');
+    dirty = true;
+    $('#astatus').textContent = "O'zgarishlar hali e'lon qilinmagan";
+    $('#publish').disabled = false;
+  });
+
+  function fillCats() {
+    var dl = $('#dlcats');
+    dl.replaceChildren();
+    catList().forEach(function (c) { dl.append(el('option', { value: c })); });
+  }
+  $('#fCats').addEventListener('input', function () {
+    var seen = {};
+    state.cats = this.value.split(',').map(function (s) { return s.trim().slice(0, 30); }).filter(function (s) {
+      var k = s.toLowerCase();
+      if (!s || seen[k]) return false;
+      seen[k] = 1;
+      return true;
+    }).slice(0, 20);
+    fillCats();
+    markDirty();
+  });
+
+  function openAdmin(open) {
+    $('#admin').hidden = !open;
+    document.body.style.overflow = open ? 'hidden' : '';
+    try { if (open) sessionStorage.setItem('adm001', '1'); else sessionStorage.removeItem('adm001'); } catch (e) {}
+    if (open) { $('#fTg').value = state.telegram; $('#fCats').value = state.cats.join(', '); fillCats(); renderAdminList(); renderPreview(); }
+  }
+  // ---------- Yashirin kirish: pastdagi 001 ni 5 marta bosish, keyin parol ----------
+  function toHex(buf) {
+    return Array.prototype.map.call(new Uint8Array(buf), function (b) { return ('0' + b.toString(16)).slice(-2); }).join('');
+  }
+  function derive(pw, salt) {
+    var s = window.crypto && window.crypto.subtle;
+    if (!s) return Promise.reject(new Error('nocrypto'));
+    var enc = new TextEncoder();
+    return s.importKey('raw', enc.encode(pw), 'PBKDF2', false, ['deriveBits']).then(function (k) {
+      return s.deriveBits({ name: 'PBKDF2', salt: enc.encode(salt), iterations: 150000, hash: 'SHA-256' }, k, 256);
+    }).then(toHex);
+  }
+  function newSalt() { var a = new Uint8Array(16); window.crypto.getRandomValues(a); return toHex(a); }
+
+  var taps = 0, tapTimer, lockUntil = 0, wrong = 0;
+  $('#secret').addEventListener('click', function () {
+    taps++;
+    clearTimeout(tapTimer);
+    tapTimer = setTimeout(function () { taps = 0; }, 1500);
+    if (taps >= 5) { taps = 0; showGate(); }
+  });
+  function showGate() {
+    var setup = !state.ph;
+    $('#gtitle').textContent = setup ? "Parol o'rnatish" : 'Admin';
+    $('#gtext').textContent = setup ? "Admin uchun parol o'ylab toping (kamida 8 belgi). Keyin «E'lon qilish» ni bosing." : 'Parolni kiriting';
+    $('#gok').textContent = setup ? "O'rnatish" : 'Kirish';
+    $('#gpw').value = '';
+    $('#gate').hidden = false;
+    $('#gpw').focus();
+  }
+  function hideGate() { $('#gate').hidden = true; $('#gpw').value = ''; }
+  $('#gcancel').addEventListener('click', hideGate);
+  $('#gform').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var pw = $('#gpw').value;
+    if (!state.ph) {
+      if (pw.length < 8) return toast("Parol kamida 8 belgi bo'lsin", true);
+      var salt;
+      try { salt = newSalt(); } catch (err) { return toast("Bu brauzerda parol o'rnatib bo'lmaydi", true); }
+      derive(pw, salt).then(function (h) {
+        state.ps = salt; state.ph = h;
+        hideGate(); openAdmin(true);
+        dirty = true;
+        $('#publish').disabled = false;
+        $('#astatus').textContent = "Parol hali e'lon qilinmagan";
+      }).catch(function () { toast("Bu brauzerda parol o'rnatib bo'lmaydi", true); });
+      return;
+    }
+    if (Date.now() < lockUntil) return toast('Biroz kuting va qayta urining', true);
+    derive(pw, state.ps).then(function (h) {
+      if (h === state.ph) { wrong = 0; hideGate(); openAdmin(true); }
+      else {
+        wrong++;
+        if (wrong >= 5) { lockUntil = Date.now() + 30000; wrong = 0; }
+        toast("Parol noto'g'ri", true);
+      }
+    }).catch(function () { toast("Bu brauzerda kirib bo'lmaydi", true); });
+  });
+  $('#setPw').addEventListener('click', function () {
+    var pw = $('#fNewPw').value;
+    if (pw.length < 8) return toast("Parol kamida 8 belgi bo'lsin", true);
+    var salt;
+    try { salt = newSalt(); } catch (err) { return toast('Bu brauzerda ishlamaydi', true); }
+    derive(pw, salt).then(function (h) {
+      state.ps = salt; state.ph = h;
+      $('#fNewPw').value = '';
+      dirty = true;
+      $('#publish').disabled = false;
+      $('#astatus').textContent = "Yangi parol hali e'lon qilinmagan";
+      toast("Parol o'zgardi. «E'lon qilish» ni bosing");
+    }).catch(function () { toast('Bu brauzerda ishlamaydi', true); });
+  });
+  $('#closeAdmin').addEventListener('click', function () { openAdmin(false); });
+
+  // ---------- E'lon qilish ----------
+  function buildDoc() {
+    var headStyle = document.head && document.head.querySelector('style');
+    var reset = headStyle && /safe-area-inset/.test(headStyle.textContent) ? headStyle.textContent : FALLBACK_RESET;
+    var css = $('#css').textContent;
+    var shell = $('#shell').innerHTML;
+    var data = JSON.stringify(state).replace(/</g, '\\u003c');
+    var app = $('#app').textContent;
+    var close = '<' + '/';
+    return '<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>' + reset + close + 'style>' + close + 'head><body>' +
+      "<title>001 Do'kon" + close + 'title><style id="css">' + css + close + 'style>' +
+      '<div id="root">' + close + 'div><template id="shell">' + shell + close + 'template>' +
+      '<script type="application/json" id="data">' + data + close + 'script>' +
+      '<script id="app">' + app + close + 'script>' + close + 'body>' + close + 'html>';
+  }
+
+  $('#publish').addEventListener('click', function () {
+    var btn = this;
+    if (!window.claude || !window.claude.use) return toast("Saqlash faqat do'kon egasi hisobida ishlaydi", true);
+    btn.disabled = true;
+    $('#astatus').textContent = "E'lon qilinmoqda...";
+    window.claude.use('artifact').then(function (a) {
+      if (!a) throw { code: 'not_granted' };
+      try { sessionStorage.setItem('adm001', '1'); } catch (e) {}
+      return a.publish(buildDoc());
+    }).catch(function (err) {
+      var code = err && err.code;
+      btn.disabled = false;
+      $('#astatus').textContent = "O'zgarishlar hali e'lon qilinmagan";
+      if (code === 'not_writer' || code === 'not_granted' || code === 'consent_required' || code === 'capability_disabled') toast("Faqat do'kon egasi o'zgartira oladi. O'z hisobingizdan oching", true);
+      else if (code === 'too_large') toast("Hajm juda katta. Rasmlar sonini yoki o'lchamini kamaytiring", true);
+      else if (code === 'conflict') toast("Sahifa yangilandi. Qayta urinib ko'ring", true);
+      else if (code === 'rate_limited') toast("Juda tez-tez. Bir oz kutib qayta bosing", true);
+      else toast("Saqlab bo'lmadi. Qayta urinib ko'ring", true);
+    });
+  });
+
+  // ---------- Boshlash ----------
+  applyLang(); renderFilters(); renderGrid(); renderCart();
+  $('#lang').addEventListener('click', function (e) {
+    var b = e.target.closest('button[data-l]');
+    if (!b) return;
+    lang = b.getAttribute('data-l');
+    try { localStorage.setItem('til_001', lang); } catch (er) {}
+    applyLang(); renderFilters(); renderGrid(); renderCart();
+  });
+  function buildHalf() {
+    var frag = document.createDocumentFragment();
+    for (var i = 0; i < 8; i++) {
+      frag.append(document.createTextNode('BRAND CLOTHES  '));
+      var s = document.createElement('span');
+      s.className = 'tw';
+      s.textContent = '✦';
+      s.style.animationDuration = (1 + Math.random() * 1.1).toFixed(2) + 's';
+      s.style.animationDelay = '-' + (Math.random() * 2).toFixed(2) + 's';
+      frag.append(s);
+      frag.append(document.createTextNode('  '));
+    }
+    return frag;
+  }
+  $('#track').append(buildHalf(), buildHalf());
+  try { if (sessionStorage.getItem('adm001') === '1') openAdmin(true); } catch (e) {}
+})();
+</script>
+
+</body></html>
